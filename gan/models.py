@@ -79,7 +79,10 @@ class SampleDiscriminator(BaseModel):
 		self.D_W_conv11 = tf.Variable(xavier_init([3, 3, 1, 10]), name='D_W_conv11')
 		self.D_W_conv12 = tf.Variable(xavier_init([3, 3, 10, 10]), name='D_W_conv12')
 		
-		self.D_W1 = tf.Variable(xavier_init([2500, h1_size]), name='d/w1')
+		self.D_W_conv21 = tf.Variable(xavier_init([3, 3, 10, 10]), name='D_W_conv21')
+		self.D_W_conv22 = tf.Variable(xavier_init([3, 3, 10, 10]), name='D_W_conv22')
+
+		self.D_W1 = tf.Variable(xavier_init([1690, h1_size]), name='d/w1')
 		self.D_b1 = tf.Variable(tf.zeros(shape=[h1_size]), name='d/b1')
 
 		self.D_W2 = tf.Variable(xavier_init([h1_size, 1]), name='d/w2')
@@ -95,9 +98,15 @@ class SampleDiscriminator(BaseModel):
 		net = tf.nn.conv2d(net, self.D_W_conv12, strides=[1, 1, 1, 1], padding='SAME')
 		net = tf.nn.relu(net)
 		net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
+
+		net = tf.nn.conv2d(net, self.D_W_conv21, strides=[1, 1, 1, 1], padding='SAME')
+		net = tf.nn.relu(net)
+		net = tf.nn.conv2d(net, self.D_W_conv22, strides=[1, 1, 1, 1], padding='SAME')
+		net = tf.nn.relu(net)
+		net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 		
 		print(net.get_shape())
-		net = tf.reshape(net, [-1, 2500])
+		net = tf.reshape(net, [-1, 1690])
 		print(net.get_shape())
 
 
