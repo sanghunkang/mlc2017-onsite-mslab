@@ -110,4 +110,4 @@ class SampleDiscriminator(BaseModel):
 		return {"logits": logits, "predictions": predictions}
 
 	def get_variables(self):
-		return [self.D_W1, self.D_W2, self.D_b1, self.D_b2]
+		return [self.D_W1, self.D_W2, self.D_b1, self.D_b2, self.D_W_conv11, self.D_W_conv12]
