@@ -105,16 +105,25 @@ class SampleDiscriminator(BaseModel):
 		h1_size = 10816
 		
 		self.D_W_conv11 = tf.Variable(tf.random_normal([3, 3, 1, 32]), name='D_W_conv11')
-		self.D_b_conv11 = tf.Variable(tf.random_normal([32]), name='D_b_conv11')
+		# self.D_b_conv11 = tf.Variable(tf.random_normal([32]), name='D_b_conv11')
 		self.D_W_conv12 = tf.Variable(tf.random_normal([3, 3, 32, 32]), name='D_W_conv12')
-		self.D_b_conv12 = tf.Variable(tf.random_normal([32]), name='D_b_conv12')
+		# self.D_b_conv12 = tf.Variable(tf.random_normal([32]), name='D_b_conv12')
 
 		self.D_W_conv21 = tf.Variable(tf.random_normal([3, 3, 32, 64]), name='D_W_conv21')
-		self.D_b_conv21 = tf.Variable(tf.random_normal([64]), name='D_b_conv21')
+		# self.D_b_conv21 = tf.Variable(tf.random_normal([64]), name='D_b_conv21')
 		self.D_W_conv22 = tf.Variable(tf.random_normal([3, 3, 64, 64]), name='D_W_conv22')
-		self.D_b_conv22 = tf.Variable(tf.random_normal([64]), name='D_b_conv22')
+		# self.D_b_conv22 = tf.Variable(tf.random_normal([64]), name='D_b_conv22')
 
-		self.D_W_fc1 = tf.Variable(tf.random_normal([13*13*64, 1]), name='D_W_fc1')
+		self.D_W_conv31 = tf.Variable(tf.random_normal([3, 3, 64, 128]), name='D_W_conv31')
+		self.D_W_conv32 = tf.Variable(tf.random_normal([3, 3, 128, 128]), name='D_W_conv32')
+
+		self.D_W_conv41 = tf.Variable(tf.random_normal([3, 3, 128, 256]), name='D_W_conv41')
+		self.D_W_conv42 = tf.Variable(tf.random_normal([3, 3, 256, 256]), name='D_W_conv42')
+
+		self.D_W_conv51 = tf.Variable(tf.random_normal([3, 3, 256, 256]), name='D_W_conv51')
+		self.D_W_conv52 = tf.Variable(tf.random_normal([3, 3, 256, 256]), name='D_W_conv52')
+
+		self.D_W_fc1 = tf.Variable(tf.random_normal([1024, 1]), name='D_W_fc1')
 		self.D_b_fc1 = tf.Variable(tf.random_normal([1]), name='D_b_fc1')
 		# self.D_W_fc2 = tf.Variable(tf.random_normal([256, 1]), name='D_W_fc2')
 		# self.D_b_fc2 = tf.Variable(tf.random_normal([1]), name='D_b_fc2')
@@ -124,25 +133,49 @@ class SampleDiscriminator(BaseModel):
 
 		print(model_input.shape)
 		net = tf.reshape(model_input, shape=[-1, 50, 50, 1])
+
 		net = tf.nn.conv2d(net, self.D_W_conv11, strides=[1, strides, strides, 1], padding='SAME')
-		net = tf.nn.bias_add(net, self.D_b_conv11)
+		# net = tf.nn.bias_add(net, self.D_b_conv11)
 		net = tf.nn.sigmoid(net)
 		net = tf.nn.conv2d(net, self.D_W_conv12, strides=[1, strides, strides, 1], padding='SAME')
-		net = tf.nn.bias_add(net, self.D_b_conv12)
+		# net = tf.nn.bias_add(net, self.D_b_conv12)
 		net = tf.nn.sigmoid(net)
 		net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 		print(net.shape)
 
 		net = tf.nn.conv2d(net, self.D_W_conv21, strides=[1, strides, strides, 1], padding='SAME')
-		net = tf.nn.bias_add(net, self.D_b_conv21)
+		# net = tf.nn.bias_add(net, self.D_b_conv21)
 		net = tf.nn.sigmoid(net)
 		net = tf.nn.conv2d(net, self.D_W_conv22, strides=[1, strides, strides, 1], padding='SAME')
-		net = tf.nn.bias_add(net, self.D_b_conv22)
+		# net = tf.nn.bias_add(net, self.D_b_conv22)
 		net = tf.nn.sigmoid(net)
 		net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 		print(net.get_shape)
+
+		net = tf.nn.conv2d(net, self.D_W_conv31, strides=[1, strides, strides, 1], padding='SAME')
+		net = tf.nn.sigmoid(net)
+		net = tf.nn.conv2d(net, self.D_W_conv32, strides=[1, strides, strides, 1], padding='SAME')
+		net = tf.nn.sigmoid(net)
+		net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
+		print(net.get_shape)
+
+		net = tf.nn.conv2d(net, self.D_W_conv41, strides=[1, strides, strides, 1], padding='SAME')
+		net = tf.nn.sigmoid(net)
+		net = tf.nn.conv2d(net, self.D_W_conv42, strides=[1, strides, strides, 1], padding='SAME')
+		net = tf.nn.sigmoid(net)
+		net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
+		print(net.get_shape)
+
+		net = tf.nn.conv2d(net, self.D_W_conv51, strides=[1, strides, strides, 1], padding='SAME')
+		net = tf.nn.sigmoid(net)
+		net = tf.nn.conv2d(net, self.D_W_conv52, strides=[1, strides, strides, 1], padding='SAME')
+		net = tf.nn.sigmoid(net)
+		net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
+		print(net.get_shape)
+
+
 		
-		net = tf.reshape(net, [-1, 13*13*64])
+		net = tf.reshape(net, [-1, 1024])
 		print(net.shape)
 
 		net = tf.add(tf.matmul(net, self.D_W_fc1), self.D_b_fc1)
@@ -159,12 +192,8 @@ class SampleDiscriminator(BaseModel):
 	def get_variables(self):
 		# return [self.D_W1, self.D_W2, self.D_b1, self.D_b2]
 		return [self.D_W_conv11,
-				self.D_b_conv11,
 				self.D_W_conv12,
-				self.D_b_conv12,
 				self.D_W_conv21,
-				self.D_b_conv21,
 				self.D_W_conv22,
-				self.D_b_conv22,
 				self.D_W_fc1,
 				self.D_b_fc1]
