@@ -331,17 +331,17 @@ def build_graph(reader,
 
           logits_for_fake = result_from_fake["logits"]
           logits_for_real = result_from_real["logits"]
-          # D_loss_fake = label_loss_fn.calculate_loss(
-          #     logits_for_fake, tf.zeros_like(logits_for_fake))
-          # D_loss_real = label_loss_fn.calculate_loss(
-          #     logits_for_real, tf.ones_like(logits_for_real))
-          # D_loss = D_loss_fake + D_loss_real
+          D_loss_fake = label_loss_fn.calculate_loss(
+              logits_for_fake, tf.zeros_like(logits_for_fake))
+          D_loss_real = label_loss_fn.calculate_loss(
+              logits_for_real, tf.ones_like(logits_for_real))
+          D_loss = D_loss_fake + D_loss_real
           
 
-          # G_loss = label_loss_fn.calculate_loss(
-          #     logits_for_fake, tf.ones_like(logits_for_fake))
-          D_loss = tf.reduce_mean(logits_for_real - logits_for_fake)
-          G_loss = tf.reduce_mean(logits_for_fake)
+          G_loss = label_loss_fn.calculate_loss(
+              logits_for_fake, tf.ones_like(logits_for_fake))
+          # D_loss = tf.reduce_mean(logits_for_real - logits_for_fake)
+          # G_loss = tf.reduce_mean(logits_for_fake)
 
           tower_D_losses.append(D_loss)
           tower_G_losses.append(G_loss)
