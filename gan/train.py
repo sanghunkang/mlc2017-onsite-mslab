@@ -84,7 +84,7 @@ if __name__ == "__main__":
   flags.DEFINE_integer("max_steps", None,
                        "The maximum number of iterations of the training loop.")
 
-  flags.DEFINE_integer("export_model_steps", 1000,
+  flags.DEFINE_integer("export_model_steps", 100,
                        "The period, in number of steps, with which the model "
                        "is exported for batch prediction.")
 
@@ -107,7 +107,7 @@ if __name__ == "__main__":
                     "generated images during training. Note that it requires "
                     "installing matplotlib.")
 
-  flags.DEFINE_integer("export_image_steps", 500,
+  flags.DEFINE_integer("export_image_steps", 100,
                        "The period, in number of steps, with which the "
                        "generated image is exported in png file")
 
@@ -331,15 +331,19 @@ def build_graph(reader,
 
           logits_for_fake = result_from_fake["logits"]
           logits_for_real = result_from_real["logits"]
-          D_loss_fake = label_loss_fn.calculate_loss(
-              logits_for_fake, tf.zeros_like(logits_for_fake))
-          D_loss_real = label_loss_fn.calculate_loss(
-              logits_for_real, tf.ones_like(logits_for_real))
-          D_loss = D_loss_fake + D_loss_real
-          tower_D_losses.append(D_loss)
+          # D_loss_fake = label_loss_fn.calculate_loss(
+          #     logits_for_fake, tf.zeros_like(logits_for_fake))
+          # D_loss_real = label_loss_fn.calculate_loss(
+          #     logits_for_real, tf.ones_like(logits_for_real))
+          # D_loss = D_loss_fake + D_loss_real
+          
 
-          G_loss = label_loss_fn.calculate_loss(
-              logits_for_fake, tf.ones_like(logits_for_fake))
+          # G_loss = label_loss_fn.calculate_loss(
+          #     logits_for_fake, tf.ones_like(logits_for_fake))
+          D_loss = tf.reduce_mean(logits_for_real - logits_for_fake)
+          G_loss = tf.reduce_mean(logits_for_fake)
+
+          tower_D_losses.append(D_loss)
           tower_G_losses.append(G_loss)
           print(G_loss)
 

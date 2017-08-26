@@ -43,64 +43,61 @@ class SampleGenerator(BaseModel):
 	def __init__(self):
 		self.noise_input_size = 100
 
-	def create_model(self, output_size, **unused_params):
-		h1_size = 512
-		h2_size = 512
-		h3_size = output_size
-		h4_size = output_size
+	# def create_model(self, output_size, **unused_params):
+	# 	self.G_W_deconv11 = tf.Variable(tf.random_normal([5, 5, 1, 1]), name='G_W_deconv11')
+	# 	# self.G_b_deconv11 = tf.Variable(tf.random_normal([100]), name='G_b_deconv11')
+	# 	# self.G_W_deconv12 = tf.Variable(tf.random_normal([5, 5, 16, 32]), name='G_W_deconv12')
+	# 	# self.G_b_deconv12 = tf.Variable(tf.random_normal([1]), name='G_b_deconv12')
 
+
+	# def run_model(self, model_input, is_training=True, **unused_params):
+	# 	print("_______________________________________________________________")
+	# 	batch_size = 128
+	# 	net = tf.reshape(model_input, shape=[batch_size, 10, 10, 1])
+	# 	print(net.get_shape())
+
+	# 	net = tf.nn.conv2d_transpose(net, self.G_W_deconv11, output_shape=[batch_size, 50, 50, 1], strides=[1,5,5,1], padding="SAME")
+	# 	net = tf.nn.sigmoid(net)
+	# 	print(net.get_shape())
+
+	# 	# net = tf.nn.conv2d_transpose(net, self.G_W_deconv12, output_shape=[batch_size, 40, 40, 16], strides=[1,5,5,1], padding="SAME")
+	# 	# net = tf.nn.sigmoid(net)
+	# 	# print(net.get_shape())
+
+	# 	output = net
+	# 	print(output.get_shape())
+	# 	print("_______________________________________________________________")
+	# 	return {"output": output}
+
+	# def get_variables(self):
+	# 	return [self.G_W_deconv11]#, self.G_W_deconv12]
+	# 			# self.G_b_deconv12]
+
+	############################################################################
+	def create_model(self, output_size, **unused_params):
+		h1_size = 128
 		self.G_W1 = tf.Variable(xavier_init([self.noise_input_size, h1_size]), name='g/w1')
 		self.G_b1 = tf.Variable(tf.zeros(shape=[h1_size]), name='g/b1')
 
-		self.G_W2 = tf.Variable(xavier_init([h1_size, h2_size]), name='g/w2')
-		self.G_b2 = tf.Variable(tf.zeros(shape=[h2_size]), name='g/b2')
-
-		self.G_W3 = tf.Variable(xavier_init([h2_size, h3_size]), name='g/w3')
-		self.G_b3 = tf.Variable(tf.zeros(shape=[h3_size]), name='g/b3')
-
-		# self.G_W4 = tf.Variable(xavier_init([h3_size, output_size]), name='g/w4')
-		# self.G_b4 = tf.Variable(tf.zeros(shape=[output_size]), name='g/b4')
+		self.G_W2 = tf.Variable(xavier_init([h1_size, output_size]), name='g/w2')
+		self.G_b2 = tf.Variable(tf.zeros(shape=[output_size]), name='g/b2')
 
 	def run_model(self, model_input, is_training=True, **unused_params):
-		net = model_input
-		
-		net = tf.contrib.layers.batch_norm(net, is_training=is_training)
-		net = tf.nn.sigmoid(tf.matmul(net, self.G_W1) + self.G_b1)
+		print("_______________________________________________________________")		
+		print(model_input.shape)
 
-		net = tf.contrib.layers.batch_norm(net, is_training=is_training)
-		net = tf.nn.sigmoid(tf.matmul(net, self.G_W2) + self.G_b2)
+		net = tf.nn.sigmoid(tf.matmul(model_input, self.G_W1) + self.G_b1)
+		print(net.shape)
+		output = tf.nn.sigmoid(tf.matmul(net, self.G_W2) + self.G_b2)
 
-		net = tf.contrib.layers.batch_norm(net, is_training=is_training)
-		net = tf.nn.sigmoid(tf.matmul(net, self.G_W3) + self.G_b3)
-
-		# net = tf.contrib.layers.batch_norm(net, is_training=is_training)
-		# net = tf.nn.tanh(tf.matmul(net, self.G_W4) + self.G_b4)
-		
-		return {"output": net}
+		print(output.shape)
+		print("_______________________________________________________________")
+		return {"output": output}
 
 	def get_variables(self):
-		return [self.G_W1, self.G_b1,
-				self.G_W2, self.G_b2,
-				self.G_W3, self.G_b3]
+		return [self.G_W1, self.G_W2, self.G_b1, self.G_b2]
 
 class SampleDiscriminator(BaseModel):
-	# def create_model(self, input_size, **unused_params):
-	# 	h1_size = 128
-	# 	self.D_W1 = tf.Variable(xavier_init([input_size, h1_size]), name='d/w1')
-	# 	self.D_b1 = tf.Variable(tf.zeros(shape=[h1_size]), name='d/b1')
-
-	# 	self.D_W2 = tf.Variable(xavier_init([h1_size, 1]), name='d/w2')
-	# 	self.D_b2 = tf.Variable(tf.zeros(shape=[1]), name='d/b2')
-
-	# def run_model(self, model_input, is_training=True, **unused_params):
-	# 	net = tf.nn.relu(tf.matmul(model_input, self.D_W1) + self.D_b1)
-	# 	logits = tf.matmul(net, self.D_W2) + self.D_b2
-	# 	predictions = tf.nn.sigmoid(logits)
-	# 	return {"logits": logits, "predictions": predictions}
-
-	# def get_variables(self):
-	# 	return [self.D_W1, self.D_W2, self.D_b1, self.D_b2]
-
 	def create_model(self, input_size, **unused_params):
 		h1_size = 10816
 		
@@ -168,3 +165,5 @@ class SampleDiscriminator(BaseModel):
 				self.D_b_conv22,
 				self.D_W_fc1,
 				self.D_b_fc1]
+				# self.D_W_fc2,
+				# self.D_b_fc2]
